@@ -16,19 +16,18 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// session middleware attaches req.sessionDoc
-app.use(sessionMiddleware);
-
-// public UI
+// ✅ Public UI
 app.use(express.static(path.join(__dirname, "public")));
 
-// API routes
-app.use("/chat", chatRoutes);
+
+app.use("/chat", sessionMiddleware, chatRoutes);
+
+
 app.use("/paystack", paystackRoutes);
 
-// basic error handler
+// ✅ Basic error handler
 app.use((err, req, res, next) => {
-  console.error(err);
+  console.error("❌ Error:", err);
   res.status(500).json({ message: err.message || "Server error" });
 });
 

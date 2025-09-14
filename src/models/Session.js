@@ -1,29 +1,38 @@
+// models/Session.js
 const mongoose = require("mongoose");
 
-const orderItemSchema = new mongoose.Schema({
-  itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Item", required: true },
+const ItemRefSchema = new mongoose.Schema({
+  itemId: { type: mongoose.Schema.Types.ObjectId, ref: "Item" },
   name: String,
-  price: Number,
   qty: { type: Number, default: 1 },
-  option: { type: String, default: "" }, // option chosen
+  price: { type: Number, default: 0 }, // total price for this item (qty * unitPrice)
 });
 
-const orderSchema = new mongoose.Schema({
-  items: [orderItemSchema],
+// Schema for a completed/past order
+const OrderSchema = new mongoose.Schema({
+  items: [ItemRefSchema],
   total: { type: Number, default: 0 },
   status: { type: String, enum: ["pending", "paid", "cancelled"], default: "pending" },
   createdAt: { type: Date, default: Date.now },
-  paystackReference: String,
 });
 
-const sessionSchema = new mongoose.Schema({
-  sessionId: { type: String, required: true, unique: true, index: true },
+// Main Session schema
+const SessionSchema = new mongoose.Schema({
+  userId: { type: String, required: true, index: true, unique: true },
+
+  state: { type: String, enum: ["main", "ordering"], default: "main" },
+
+  // current active order (not yet checked out)
   currentOrder: {
-    items: [orderItemSchema],
+    items: [ItemRefSchema],
     total: { type: Number, default: 0 },
   },
-  orders: [orderSchema], // placed orders (history)
-  createdAt: { type: Date, default: Date.now },
+
+  // completed past orders
+  orders: [OrderSchema],
+
+  // ephemeral mapping: array of itemIds for numeric menu choices
+  __menuMap: [{ type: String }],
 });
 
-module.exports = mongoose.model("Session", sessionSchema);
+module.exports = mongoose.model("Session", SessionSchema);
