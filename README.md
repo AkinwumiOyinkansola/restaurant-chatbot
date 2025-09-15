@@ -345,6 +345,7 @@ Include error messages and steps to reproduce
 Oyinkansola Akinwumi
 
 GitHub: @AkinwumiOyinkansola
+App is live @ https://restaurant-chatbot-b8bc.onrender.com/
 
 🙏 Acknowledgments
 
